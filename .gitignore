@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+# Ignore DS_Store files that can be created by Mac OS
+.DS_Store
+
+# Ignore environment file for API_KEYS
+.env 
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Ignore vscode settings
+.vscode
+# Ignore .vscode settings for debugging
+.vscode/launch.json
+# Ignore all .log files
+*.log*
+# Ignore swp swo files that can be created by vim
+*.swp
+*.swo
+
+# Example files
+users(tutorial).txt
