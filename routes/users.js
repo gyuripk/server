@@ -13,20 +13,20 @@ router.get("/", function (req, res, next) {
 
 // 회원가입 API
 router.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
 
-  if (!email || !password) {
+  if (!username || !password) {
     return res.status(400).json({
       error: true,
-      message: "Request body incomplete - email and password needed",
+      message: "Request body incomplete - username and password needed",
     });
   }
 
   try {
     const users = await req.db
       .from("users")
-      .select("email")
-      .where("email", "=", email);
+      .select("username")
+      .where("username", "=", username);
 
     if (users.length > 0) {
       return res
@@ -37,7 +37,7 @@ router.post("/register", async (req, res) => {
     // user does not exist, insert new user
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
-    await req.db.from("users").insert({ email, hash });
+    await req.db.from("users").insert({ username, hash });
 
     return res.status(201).json({ error: false, message: "User created" });
   } catch (error) {
@@ -50,21 +50,21 @@ router.post("/register", async (req, res) => {
 
 //로그인 API
 router.post("/login", async (req, res) => {
-  const email = req.body.email;
+  const username = req.body.username;
   const password = req.body.password;
 
-  if (!email || !password) {
+  if (!username || !password) {
     return res.status(400).json({
       error: true,
-      message: "Request body incomplete - email and password needed",
+      message: "Request body incomplete - username and password needed",
     });
   }
 
   try {
     const users = await req.db
       .from("users")
-      .select("email", "hash")
-      .where("email", "=", email);
+      .select("username", "hash")
+      .where("username", "=", username);
 
     if (users.length === 0) {
       return res
@@ -85,7 +85,7 @@ router.post("/login", async (req, res) => {
     const secretKey = process.env.SECRET_KEY; // 환경 변수에서 secretKey 로드
     const expires_in = 60 * 60 * 24; // 24시간
     const exp = Math.floor(Date.now() / 1000) + expires_in;
-    const token = jwt.sign({ email, exp }, secretKey);
+    const token = jwt.sign({ username, exp }, secretKey);
 
     return res.json({ token_type: "Bearer", token, expires_in });
   } catch (error) {
@@ -124,8 +124,8 @@ const authorize = (req, res, next) => {
         .json({ error: true, message: "Token has expired" });
     }
 
-    // 특정한 사람만 access할 수 있게 하려면 여기서 email을 확인하면 됨
-    req.email = decoded.email;
+    // 특정한 사람만 access할 수 있게 하려면 여기서 username을 확인하면 됨
+    req.username = decoded.username;
     next(); // next가 없으면 무한로딩, token이 없으면 무한로딩
   } catch (e) {
     console.error("Token verification failed:", e);
