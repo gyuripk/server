@@ -11,8 +11,9 @@ const cors = require("cors");
 const options = require("./db");
 const knex = require("knex")(options);
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+const notesRouter = require("./routes/notes");
 const { log } = require("console");
 
 var app = express();
@@ -39,6 +40,7 @@ app.use((req, res, next) => {
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/notes", notesRouter); // 추가
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
