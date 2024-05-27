@@ -4,6 +4,24 @@ const authorize = require("./authorize"); // 실제 authorize 미들웨어 경�
 
 // insomnia에서 post로 요청할때 localhost:3000/notes/register로 요청
 // 로그인한 사용자의 노트 목록 라우트
+/**
+ * @swagger
+ * /notes:
+ *   get:
+ *     summary: Retrieve a list of notes
+ *     description: Retrieve a list of notes for the logged-in user.
+ *     tags:
+ *       - Notes
+ *     responses:
+ *       200:
+ *         description: A list of notes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ */
 router.get("/", authorize, async (req, res) => {
   const userId = req.userId; // authorize 미들웨어에서 설정한 사용자 ID
   console.log("userId", userId);
@@ -18,6 +36,31 @@ router.get("/", authorize, async (req, res) => {
 });
 
 //특정 노트 조회 라우트
+/**
+ * @swagger
+ * /notes/{id}:
+ *   get:
+ *     summary: Retrieve a single note
+ *     description: Retrieve a specific note by ID for the logged-in user.
+ *     tags:
+ *       - Notes
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The note ID
+ *     responses:
+ *       200:
+ *         description: A single note
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       404:
+ *         description: Note not found
+ */
 router.get("/:id", authorize, async (req, res) => {
   const userId = req.userId; // 토큰에서 가져온 사용자 ID
   const noteId = req.params.id;
@@ -39,6 +82,35 @@ router.get("/:id", authorize, async (req, res) => {
 });
 
 // 노트 추가 라우트
+/**
+ * @swagger
+ * /notes:
+ *   post:
+ *     summary: Create a new note
+ *     description: Create a new note for the logged-in user.
+ *     tags:
+ *       - Notes
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Note created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Title and content are required
+ */
 router.post("/", authorize, async (req, res) => {
   const { title, content } = req.body;
   const userId = req.userId; // authorize 미들웨어에서 설정한 사용자 ID
@@ -64,6 +136,44 @@ router.post("/", authorize, async (req, res) => {
 });
 
 // 노트 수정 라우트
+/**
+ * @swagger
+ * /notes/{id}:
+ *   put:
+ *     summary: Update an existing note
+ *     description: Update a specific note by ID for the logged-in user.
+ *     tags:
+ *       - Notes
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The note ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Note updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Title and content are required
+ *       404:
+ *         description: Note not found
+ */
 router.put("/:id", authorize, async (req, res) => {
   const { title, content } = req.body;
   const userId = req.userId; // 토큰에서 가져온 사용자 ID
@@ -98,6 +208,27 @@ router.put("/:id", authorize, async (req, res) => {
 });
 
 // 노트 삭제 라우트
+/**
+ * @swagger
+ * /notes/{id}:
+ *   delete:
+ *     summary: Delete a note
+ *     description: Delete a specific note by ID for the logged-in user.
+ *     tags:
+ *       - Notes
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The note ID
+ *     responses:
+ *       200:
+ *         description: Note deleted successfully
+ *       404:
+ *         description: Note not found
+ */
 router.delete("/:id", authorize, async (req, res) => {
   const userId = req.userId; // 토큰에서 가져온 사용자 ID
   const noteId = req.params.id;

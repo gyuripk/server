@@ -5,14 +5,87 @@ const jwt = require("jsonwebtoken"); //jwt 추가
 require("dotenv").config(); // .env 파일에서 환경 변수를 로드
 // const authorize = require("./authorize"); // 실제 authorize 미들웨어 경로로 수정
 
-/* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
-});
+// /* GET users listing. */
+// /**
+//  * @swagger
+//  * /users:
+//  *   get:
+//  *     summary: Get all users
+//  *     description: Returns a list of all users.
+//  *     responses:
+//  *       200:
+//  *         description: A list of users.
+//  */
+// router.get("/", function (req, res, next) {
+//   res.send("respond with a resource");
+// });
 
 // insomnia에서 post로 요청할때 localhost:3000/users/register로 요청
 
 // 회원가입 API
+/**
+ * @swagger
+ * /users/register:
+ *   post:
+ *     summary: Register a new user
+ *     description: Registers a new user with a username and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: john_doe
+ *               password:
+ *                 type: string
+ *                 example: strongpassword123
+ *     responses:
+ *       201:
+ *         description: User created successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: User created
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Request body incomplete - username and password needed
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
@@ -50,6 +123,85 @@ router.post("/register", async (req, res) => {
 });
 
 //로그인 API
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: Login a user
+ *     description: Logs in a user with a username and password.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *               - password
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: john_doe
+ *               password:
+ *                 type: string
+ *                 example: strongpassword123
+ *     responses:
+ *       200:
+ *         description: User logged in successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token_type:
+ *                   type: string
+ *                   example: Bearer
+ *                 token:
+ *                   type: string
+ *                   example: some_jwt_token
+ *                 expires_in:
+ *                   type: integer
+ *                   example: 86400
+ *       400:
+ *         description: Bad request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Request body incomplete - username and password needed
+ *       401:
+ *         description: Unauthorized.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: User does not exist or Password does not match
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
 router.post("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
