@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt"); //bcrypt 추가
-const jwt = require("jsonwebtoken"); //jwt 추가
-require("dotenv").config(); // .env 파일에서 환경 변수를 로드
-// const authorize = require("./authorize"); // 실제 authorize 미들웨어 경로로 수정
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // /* GET users listing. */
 // /**
@@ -20,9 +19,6 @@ require("dotenv").config(); // .env 파일에서 환경 변수를 로드
 //   res.send("respond with a resource");
 // });
 
-// insomnia에서 post로 요청할때 localhost:3000/users/register로 요청
-
-// 회원가입 API
 /**
  * @swagger
  * /users/register:
@@ -110,6 +106,7 @@ router.post("/register", async (req, res) => {
 
     // user does not exist, insert new user
     const saltRounds = 10;
+    // hash the password
     const hash = bcrypt.hashSync(password, saltRounds);
     await req.db.from("users").insert({ username, hash });
 
@@ -122,7 +119,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-//로그인 API
 /**
  * @swagger
  * /users/login:
@@ -205,7 +201,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-
+  // Check if both username and password are provided
   if (!username || !password) {
     return res.status(400).json({
       error: true,
@@ -214,9 +210,10 @@ router.post("/login", async (req, res) => {
   }
 
   try {
+    // Retrieve the user from the database by username
     const users = await req.db
       .from("users")
-      .select("id", "username", "hash") //"id" 추가
+      .select("id", "username", "hash")
       .where("username", "=", username);
 
     if (users.length === 0) {
@@ -227,6 +224,7 @@ router.post("/login", async (req, res) => {
 
     const user = users[0];
     console.log("User: ", user);
+    // Compare the provided password with the stored hash
     const match = await bcrypt.compare(password, user.hash);
     console.log("Match: ", match);
     if (!match) {
@@ -235,15 +233,15 @@ router.post("/login", async (req, res) => {
         .json({ error: true, message: "Password does not match" });
     }
 
-    const secretKey = process.env.SECRET_KEY; // 환경 변수에서 secretKey 로드
-    const expires_in = 60 * 60 * 24; // 24시간
+    // Generate JWT token with expiration time
+    const secretKey = process.env.SECRET_KEY;
+    const expires_in = 60 * 60 * 24;
     const exp = Math.floor(Date.now() / 1000) + expires_in;
-    const userId = user.id; // 추가
+    const userId = user.id;
     console.log("User ID: ", userId);
-    // const token = jwt.sign({ username, exp }, secretKey);
-    // const token = jwt.sign({ username, userID: user.id, exp }, secretKey); //userID 추가
-    const token = jwt.sign({ username, userId, exp }, secretKey); //userID 추가
+    const token = jwt.sign({ username, userId, exp }, secretKey);
 
+    // Respond with the generated token
     return res.json({ token_type: "Bearer", token, expires_in });
   } catch (error) {
     console.error(error);

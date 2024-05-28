@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const authorize = require("./authorize"); // 실제 authorize 미들웨어 경로로 수정
+const authorize = require("./authorize");
 
-// insomnia에서 post로 요청할때 localhost:3000/notes/register로 요청
-// 로그인한 사용자의 노트 목록 라우트
 /**
  * @swagger
  * /notes:
@@ -23,7 +21,7 @@ const authorize = require("./authorize"); // 실제 authorize 미들웨어 경�
  *                 type: object
  */
 router.get("/", authorize, async (req, res) => {
-  const userId = req.userId; // authorize 미들웨어에서 설정한 사용자 ID
+  const userId = req.userId; // The user ID set by the authorize middleware from the
   console.log("userId", userId);
   try {
     const notes = await req.db("notes").where({ user_id: userId });
@@ -35,7 +33,6 @@ router.get("/", authorize, async (req, res) => {
   }
 });
 
-//특정 노트 조회 라우트
 /**
  * @swagger
  * /notes/{id}:
@@ -62,7 +59,7 @@ router.get("/", authorize, async (req, res) => {
  *         description: Note not found
  */
 router.get("/:id", authorize, async (req, res) => {
-  const userId = req.userId; // 토큰에서 가져온 사용자 ID
+  const userId = req.userId;
   const noteId = req.params.id;
   console.log("noteId", noteId);
 
@@ -81,7 +78,6 @@ router.get("/:id", authorize, async (req, res) => {
   }
 });
 
-// 노트 추가 라우트
 /**
  * @swagger
  * /notes:
@@ -113,7 +109,7 @@ router.get("/:id", authorize, async (req, res) => {
  */
 router.post("/", authorize, async (req, res) => {
   const { title, content } = req.body;
-  const userId = req.userId; // authorize 미들웨어에서 설정한 사용자 ID
+  const userId = req.userId;
   if (!title || !content) {
     return res
       .status(400)
@@ -135,7 +131,6 @@ router.post("/", authorize, async (req, res) => {
   }
 });
 
-// 노트 수정 라우트
 /**
  * @swagger
  * /notes/{id}:
@@ -176,7 +171,7 @@ router.post("/", authorize, async (req, res) => {
  */
 router.put("/:id", authorize, async (req, res) => {
   const { title, content } = req.body;
-  const userId = req.userId; // 토큰에서 가져온 사용자 ID
+  const userId = req.userId;
   const noteId = req.params.id;
   console.log("노트 수정 noteId", noteId);
   if (!title || !content) {
@@ -207,7 +202,6 @@ router.put("/:id", authorize, async (req, res) => {
   }
 });
 
-// 노트 삭제 라우트
 /**
  * @swagger
  * /notes/{id}:
@@ -230,7 +224,7 @@ router.put("/:id", authorize, async (req, res) => {
  *         description: Note not found
  */
 router.delete("/:id", authorize, async (req, res) => {
-  const userId = req.userId; // 토큰에서 가져온 사용자 ID
+  const userId = req.userId;
   const noteId = req.params.id;
 
   try {

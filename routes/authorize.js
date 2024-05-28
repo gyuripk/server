@@ -1,12 +1,15 @@
 const jwt = require("jsonwebtoken");
 
+// Middleware function to authorize users based on the JWT token
 const authorize = (req, res, next) => {
+  // Retrieve the authorization header
   const authorization = req.headers.authorization;
   let token = null;
   console.log("Authorization: ", authorization);
 
+  // Check if the authorization header is properly formatted
   if (authorization && authorization.split(" ").length === 2) {
-    token = authorization.split(" ")[1]; // 공백 제거 후 토큰 값만 가져옴
+    token = authorization.split(" ")[1];
     console.log("Token: ", token);
   } else {
     return res.status(401).json({
@@ -16,17 +19,18 @@ const authorize = (req, res, next) => {
   }
 
   try {
-    const secretKey = process.env.SECRET_KEY; // 환경 변수에서 secretKey 로드
+    // Verify the JWT token
+    const secretKey = process.env.SECRET_KEY;
     const decoded = jwt.verify(token, secretKey);
-
+    // Check if the token has expired
     if (decoded.exp < Math.floor(Date.now() / 1000)) {
       console.log("Token has expired");
       return res
         .status(401)
         .json({ error: true, message: "Token has expired" });
     }
-
-    req.userId = decoded.userId; // 사용자 ID 설정
+    // Attach the user ID to the request object
+    req.userId = decoded.userId;
     next();
   } catch (e) {
     console.error("Token verification failed:", e);

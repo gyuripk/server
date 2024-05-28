@@ -14,13 +14,12 @@ const knex = require("knex")(options);
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const notesRouter = require("./routes/notes");
-const swaggerRouter = require("./routes/swagger"); // Swagger 라우터 추가
+const swaggerRouter = require("./routes/swagger");
 
 const { log } = require("console");
 
 var app = express();
 
-//보안 및 cros 설정 (위치...어딘지 모르겠음)
 app.use(logger("common"));
 app.use(helmet());
 app.use(cors());
@@ -42,8 +41,8 @@ app.use((req, res, next) => {
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/notes", notesRouter); // 추가
-app.use(swaggerRouter); // Swagger 라우터 사용
+app.use("/notes", notesRouter);
+app.use(swaggerRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
